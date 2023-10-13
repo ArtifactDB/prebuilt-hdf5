@@ -1,0 +1,51 @@
+name: Build libraries
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build_linux_wheels:
+    name: Build Linux wheels
+    #if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    container:
+      image: ${{ matrix.image }}
+    strategy:
+      matrix:
+        include:
+          - image: quay.io/pypa/manylinux2014_x86_64
+            arch: "x86_64"
+#          - image: quay.io/pypa/manylinux2014_aarch64
+#            arch: "arm64"
+
+    steps:
+      - name: Set up CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Install wget
+        run: yum install -y wget
+
+      - name: Set up HDF5
+        run: | 
+          wget https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_12_2.tar.gz -O bundle.tar.gz
+          tar -xf bundle.tar.gz
+          cd hdf5-hdf5-1_12_2/
+          cmake -S . -B build \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DHDF5_BUILD_EXAMPLES=OFF \
+            -DHDF5_BUILD_TOOLS=OFF \
+            -DHDF5_BUILD_UTILS=OFF \
+            -DHDF5_BUILD_CPP_LIB=ON \
+            -DHDF5_ENABLE_Z_LIB_SUPPORT=ON \
+            -DHDF5_ENABLE_SZIP_SUPPORT=ON \
+            -DBUILD_TESTING=OFF
+          cmake --build build
+          cpack -G TGZ --config build/CPackConfig.cmake
+
+      - name: Upload tarballs
+        uses: actions/upload-artifact@v3
+        with:
+          path: build/HDF5-*.tar.gz
