@@ -2,7 +2,9 @@
 
 set -e
 set -u
+
 output=$1 # output file name for the CPack bundle.
+options=${2:-""}
 
 mkdir -p installs
 
@@ -10,7 +12,7 @@ mkdir -p installs
 wget http://zlib.net/fossils/zlib-1.3.tar.gz -O zlib.tar.gz
 tar -xvf zlib.tar.gz
 cd zlib-1.3
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=../installs
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=../installs ${options}
 cmake --build build
 cmake --install build
 cd -
@@ -19,7 +21,7 @@ cd -
 git clone https://gitlab.dkrz.de/k202009/libaec
 cd libaec
 git checkout v1.0.6
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=../installs
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=../installs ${options}
 cmake --build build
 cmake --install build
 cd -
@@ -45,7 +47,8 @@ cmake -S . -B build \
   -DZLIB_LIBRARY=${cwd}/installs/lib/libz.a \
   -DSZIP_INCLUDE_DIR=${cwd}/installs/include \
   -DSZIP_LIBRARY=${cwd}/installs/lib/libsz.a \
-  -DCPACK_PACKAGE_FILE_NAME=${output}
+  -DCPACK_PACKAGE_FILE_NAME=${output} \
+  ${options}
 
 cmake --build build
 cpack -G TGZ --config build/CPackConfig.cmake

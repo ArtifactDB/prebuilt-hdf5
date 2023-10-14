@@ -65,6 +65,33 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: hdf5/${{ env.ARTIFACT_NAME }}.tar.gz
 
+  build_macosx_x86_64:
+    name: Build MacOSX (x86_64)
+    runs-on: macOS-11
+    env:
+      ARTIFACT_NAME: macosx_x86_64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Install wget
+        run: brew install wget
+
+      - name: Run the build
+        run: |
+            git config --global --add safe.directory $(pwd)
+            ./build.sh "${ARTIFACT_NAME}" "-DCMAKE_OSX_ARCHITECTURES=x86_64"
+
+      - name: Upload tarball
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: hdf5/${{ env.ARTIFACT_NAME }}.tar.gz
+
   publish:
     name: Publish libraries
     needs: [build_manylinux_x86_64, build_musllinux_x86_64]
