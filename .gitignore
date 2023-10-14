@@ -1,0 +1,5 @@
+*.swp
+*.tar.gz
+hdf5-*
+zlib-*
+libaec/
