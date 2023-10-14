@@ -107,6 +107,18 @@ jobs:
           name: manylinux_x86_64
           path: artifacts
 
+      - name: Download musllinux (x86_64) artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: musllinux_x86_64
+          path: artifacts
+
+      - name: Download macosx (x86_64) artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: macosx_x86_64
+          path: artifacts
+
       - name: List artifacts
         run: ls -R
         working-directory: artifacts
