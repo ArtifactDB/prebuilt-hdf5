@@ -9,13 +9,15 @@ package_name=${2}
 mkdir installs
 install_dir=$(pwd)/installs
 
-./setup_aec.sh "-DCMAKE_OSX_ARCHITECTURES=${arch} -DCPACK_PACKAGE_FILE_NAME=libaec-${package_name} -DCMAKE_INSTALL_PREFIX=${install_dir}" 
+common="-DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=${arch} -DCMAKE_INSTALL_PREFIX=${install_dir}" 
+
+./setup_aec.sh "${common} -DCPACK_PACKAGE_FILE_NAME=libaec-${package_name}" 
 cd libaec
 cmake --install build
 cpack -G TGZ --config build/CPackConfig.cmake
 cd -
 
-./setup_hdf5.sh "-DCMAKE_OSX_ARCHITECTURES=${arch} -DCPACK_PACKAGE_FILE_NAME=libhdf5-${package_name} -DCMAKE_INSTALL_PREFIX=${install_dir}" 
+./setup_hdf5.sh "${common} -DCPACK_PACKAGE_FILE_NAME=libhdf5-${package_name}"
 cd libhdf5
 cmake --install build
 cpack -G TGZ --config build/CPackConfig.cmake

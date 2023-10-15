@@ -15,7 +15,6 @@ cd libhdf5
 
 cmake -S . -B build \
   -DBUILD_SHARED_LIBS=ON \
-  -DCMAKE_BUILD_TYPE=Release \
   -DHDF5_BUILD_EXAMPLES=OFF \
   -DHDF5_BUILD_TOOLS=OFF \
   -DHDF5_BUILD_UTILS=OFF \
