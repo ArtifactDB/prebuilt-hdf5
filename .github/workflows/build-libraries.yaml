@@ -53,14 +53,14 @@ jobs:
         run: |
             git config --global --add safe.directory $(pwd)
             ./build_windows.sh ${ARTIFACT_NAME}
-        shell: C:\msys64\usr\bin\bash.exe
+        shell: bash
 
       - name: Move tarballs
         run: | 
           mkdir artifacts
           mv libaec/libaec-*.tar.gz artifacts
           mv libhdf5/libhdf5-*.tar.gz artifacts
-        shell: C:\msys64\usr\bin\bash.exe
+        shell: bash
 
       - name: Upload tarballs
         uses: actions/upload-artifact@v3
