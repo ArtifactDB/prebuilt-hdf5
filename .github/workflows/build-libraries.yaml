@@ -1,6 +1,7 @@
 name: Build libraries
 
 on:
+  push:
   create:
     tags:
       - '*'
@@ -38,9 +39,30 @@ jobs:
         with:
           path: artifacts/*.tar.gz
 
+  build_windows_x86_64:
+    name: Build Windows (x86_64)
+    runs-on: windows-2019
+    env:
+      ARTIFACT_NAME: windows_x86_64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run the build
+        run: |
+            git config --global --add safe.directory $(pwd)
+            ./build_windows.sh
+        shell: bash
+
+      - name: Upload tarballs
+        uses: actions/upload-artifact@v3
+        with:
+          path: installed
+
   publish:
     name: Publish libraries
-    needs: [build_macosx_x86_64]
+    needs: [build_macosx_x86_64, build_windows_x86_64]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
