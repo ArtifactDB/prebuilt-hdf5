@@ -8,6 +8,19 @@ package_name=${1}
 mkdir installs
 install_dir=$(pwd)/installs
 
+# Setting up ZLIB
+curl https://www.zlib.net/zlib-1.3.tar.gz > bundle.tar.gz
+tar -xf bundle.tar.gz
+rm bundle.tar.gz
+mv zlib-1.3 libz
+
+cd libz
+cmake -S . -B build -DCPACK_PACKAGE_FILE_NAME=libz-${package_name} -DCMAKE_INSTALL_PREFIX=${install_dir}
+cmake --build build --config Release
+cmake --install build
+cpack -G TGZ --config build/CPackConfig.cmake
+cd -
+
 # Setting up AEC
 git clone https://gitlab.dkrz.de/k202009/libaec
 cd libaec
@@ -22,8 +35,6 @@ cd -
 curl -L https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_12_2.tar.gz > bundle.tar.gz
 tar -xf bundle.tar.gz
 rm bundle.tar.gz
-
-cwd=$(pwd)
 mv hdf5-hdf5-1_12_2/ libhdf5
 cd libhdf5
 
