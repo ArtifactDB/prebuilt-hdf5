@@ -1,72 +1,11 @@
 name: Build libraries
 
 on:
-  push:
-    branches:
-      - master
+  create:
     tags:
       - '*'
-  pull_request:
 
 jobs:
-  build_manylinux_x86_64:
-    name: Build manylinux (x86_64)
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/pypa/manylinux2014_x86_64
-    env:
-      ARTIFACT_NAME: manylinux_x86_64
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Set up CMake
-        uses: lukka/get-cmake@latest
-
-      - name: Install wget
-        run: yum install -y wget
-
-      - name: Run the build
-        run: |
-            git config --global --add safe.directory $(pwd)
-            ./build.sh "${ARTIFACT_NAME}"
-
-      - name: Upload tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: hdf5/${{ env.ARTIFACT_NAME }}.tar.gz
-
-  build_musllinux_x86_64:
-    name: Build musllinux (x86_64)
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/pypa/musllinux_1_1_x86_64
-    env:
-      ARTIFACT_NAME: musllinux_x86_64
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install CMake
-        run: apk add --no-cache cmake
-
-      - name: Install wget
-        run: apk add --no-cache wget
-
-      - name: Run the build
-        run: |
-            git config --global --add safe.directory $(pwd)
-            ./build.sh "${ARTIFACT_NAME}"
-
-      - name: Upload tarball
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: hdf5/${{ env.ARTIFACT_NAME }}.tar.gz
-
   build_macosx_x86_64:
     name: Build MacOSX (x86_64)
     runs-on: macOS-11
@@ -86,45 +25,37 @@ jobs:
       - name: Run the build
         run: |
             git config --global --add safe.directory $(pwd)
-            ./build.sh "${ARTIFACT_NAME}" "-DCMAKE_OSX_ARCHITECTURES=x86_64"
+            ./build_macosx.sh "x86_64" ${ARTIFACT_NAME}
 
-      - name: Upload tarball
+      - name: Move tarballs
+        run: | 
+          mkdir artifacts
+          mv libaec/libaec-*.tar.gz artifacts
+          mv libhdf5/libhdf5-*.tar.gz artifacts
+
+      - name: Upload tarballs
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: hdf5/${{ env.ARTIFACT_NAME }}.tar.gz
+          path: artifacts/*.tar.gz
 
   publish:
     name: Publish libraries
-    needs: [build_manylinux_x86_64, build_musllinux_x86_64, build_macosx_x86_64]
+    needs: [build_macosx_x86_64]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download manylinux (x86_64) artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: manylinux_x86_64
-          path: artifacts
-
-      - name: Download musllinux (x86_64) artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: musllinux_x86_64
-          path: artifacts
-
       - name: Download macosx (x86_64) artifact
         uses: actions/download-artifact@v3
         with:
-          name: macosx_x86_64
-          path: artifacts
+          path: dump
 
       - name: List artifacts
         run: ls -R
-        working-directory: artifacts
+        working-directory: dump
 
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
-          name: "HDF5 1.12.2"
-          files: artifacts/*
+          name: "HDF5 binaries (1.12.2)"
+          files: dump/*/*

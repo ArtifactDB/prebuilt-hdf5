@@ -1,0 +1,26 @@
+on:
+  create:
+    tags:
+      - '*'
+
+name: Create Docker images
+
+jobs:
+  create_docker:
+    runs-on: ubuntu-latest
+    strategy:
+       matrix:
+         arch: [manylinux_x86_64, musllinux_x86_64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: ${{ github.repository }}/${{ matrix.arch }}:${{ github.ref_name }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          dockerfile: ${{ matrix.arch }}.dockerfile
+          registry: ghcr.io
