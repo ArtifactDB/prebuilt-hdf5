@@ -3,10 +3,8 @@
 set -e
 set -u
 
-package_name=${1}
-
-mkdir installs
-install_dir=$(pwd)/installs
+mkdir installed
+install_dir=$(pwd)/installed
 
 # Setting up ZLIB
 curl https://www.zlib.net/zlib-1.3.tar.gz > bundle.tar.gz
@@ -15,20 +13,18 @@ rm bundle.tar.gz
 mv zlib-1.3 libz
 
 cd libz
-cmake -S . -B build -DCPACK_PACKAGE_FILE_NAME=libz-${package_name} -DCMAKE_INSTALL_PREFIX=${install_dir}
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${install_dir}
 cmake --build build --config Release
 cmake --install build
-cpack -G TGZ --config build/CPackConfig.cmake
 cd -
 
 # Setting up AEC
 git clone https://gitlab.dkrz.de/k202009/libaec
 cd libaec
 git checkout v1.0.6
-cmake -S . -B build -DCPACK_PACKAGE_FILE_NAME=libaec-${package_name} -DCMAKE_INSTALL_PREFIX=${install_dir}
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${install_dir}
 cmake --build build --config Release
 cmake --install build
-cpack -G TGZ --config build/CPackConfig.cmake
 cd -
 
 # Setting up HDF5
@@ -49,10 +45,10 @@ cmake -S . -B build \
   -DHDF5_ENABLE_SZIP_SUPPORT=ON \
   -DBUILD_TESTING=OFF \
   -DUSE_LIBAEC=ON \
-  -DCPACK_PACKAGE_FILE_NAME=libhdf5-${package_name} \
   -DCMAKE_INSTALL_PREFIX=${install_dir}
 
 cmake --build build --config Release
 cmake --install build
-cpack -G TGZ --config build/CPackConfig.cmake
 cd -
+
+
