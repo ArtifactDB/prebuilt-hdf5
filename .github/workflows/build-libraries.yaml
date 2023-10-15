@@ -20,24 +20,15 @@ jobs:
       - name: Set up CMake
         uses: lukka/get-cmake@latest
 
-      - name: Install wget
-        run: brew install wget
-
       - name: Run the build
         run: |
             git config --global --add safe.directory $(pwd)
-            ./build_macosx.sh "x86_64" ${ARTIFACT_NAME}
-
-      - name: Move tarballs
-        run: | 
-          mkdir artifacts
-          mv libaec/libaec-*.tar.gz artifacts
-          mv libhdf5/libhdf5-*.tar.gz artifacts
+            ./build_macosx.sh "x86_64"
 
       - name: Upload tarballs
         uses: actions/upload-artifact@v3
         with:
-          path: artifacts/*.tar.gz
+          path: installed
 
   build_windows_x86_64:
     name: Build Windows (x86_64)

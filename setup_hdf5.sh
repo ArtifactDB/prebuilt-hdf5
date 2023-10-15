@@ -9,7 +9,6 @@ curl -L https://github.com/HDFGroup/hdf5/archive/refs/tags/hdf5-1_12_2.tar.gz > 
 tar -xf bundle.tar.gz
 rm bundle.tar.gz
 
-cwd=$(pwd)
 mv hdf5-hdf5-1_12_2/ libhdf5
 cd libhdf5
 
