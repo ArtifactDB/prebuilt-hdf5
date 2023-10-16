@@ -67,5 +67,5 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
-          name: "HDF5 binaries (1.12.2)"
+          name: "HDF5 binaries (x86_64)"
           files: dump/*/*
