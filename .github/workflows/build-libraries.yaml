@@ -61,11 +61,11 @@ jobs:
           path: dump
 
       - name: List artifacts
-        run: ls -l
+        run: ls -lR
         working-directory: dump
 
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
           name: "HDF5 binaries (1.12.2)"
-          files: dump/*
+          files: dump/*/*
