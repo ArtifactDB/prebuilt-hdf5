@@ -1,7 +1,7 @@
 on:
   create:
     tags:
-      - '*'
+      - '*-x86_64'
 
 name: Create Docker images
 

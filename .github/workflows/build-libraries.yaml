@@ -3,7 +3,7 @@ name: Build libraries
 on:
   create:
     tags:
-      - '*'
+      - '*-x86_64'
 
 jobs:
   build_macosx_x86_64:
