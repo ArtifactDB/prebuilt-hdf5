@@ -45,7 +45,8 @@ cmake -S . -B build \
   -DHDF5_ENABLE_SZIP_SUPPORT=ON \
   -DBUILD_TESTING=OFF \
   -DUSE_LIBAEC=ON \
-  -DCMAKE_INSTALL_PREFIX=${install_dir}
+  -DCMAKE_INSTALL_PREFIX=${install_dir} \
+  -DCMAKE_PREFIX_PATH=${install_dir}
 
 cmake --build build --config Release
 cmake --install build

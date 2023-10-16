@@ -15,7 +15,7 @@ cd libaec
 cmake --install build
 cd -
 
-./setup_hdf5.sh "${common}"
+./setup_hdf5.sh "${common} -DCMAKE_PREFIX_PATH=${install_dir}"
 cd libhdf5
 cmake --install build
 cd -
