@@ -1,7 +1,6 @@
 name: Build libraries
 
 on:
-  push:
   create:
     tags:
       - '*'
