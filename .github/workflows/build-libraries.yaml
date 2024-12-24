@@ -3,25 +3,39 @@ name: Build libraries
 on:
   create:
     tags:
-      - '*-x86_64'
+      - '*'
+  pull_request:
 
 jobs:
-  build_macosx_x86_64:
-    name: Build MacOSX (x86_64)
-    runs-on: macOS-11
+  build_macosx:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # macos-13 is an intel runner, higher macos's are apple silicon
+        # At some point, maybe get this to work on windows-latest
+        os: [macos-13, macos-latest]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up CMake
         uses: lukka/get-cmake@latest
 
       - name: Run the build
+        if: matrix.os == 'macos-13'
         run: |
             git config --global --add safe.directory $(pwd)
             ./build_macosx.sh "x86_64"
             tar -czf macosx_x86_64.tar.gz installed/
+
+      - name: Run the build
+        if: matrix.os == 'macos-latest'
+        run: |
+            git config --global --add safe.directory $(pwd)
+            ./build_macosx.sh "arm64"
+            tar -czf macosx_arm64.tar.gz installed/
 
       - name: Upload tarballs
         uses: actions/upload-artifact@v3
@@ -34,7 +48,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run the build
         run: |
@@ -50,12 +64,12 @@ jobs:
 
   publish:
     name: Publish libraries
-    needs: [build_macosx_x86_64, build_windows_x86_64]
+    needs: [build_macosx, build_windows_x86_64]
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download macosx (x86_64) artifact
+      - name: Download macosx artifact
         uses: actions/download-artifact@v3
         with:
           path: dump
@@ -67,5 +81,5 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
-          name: "HDF5 binaries (x86_64)"
+          name: "HDF5 binaries"
           files: dump/*/*

@@ -7,10 +7,10 @@ mkdir installed
 install_dir=$(pwd)/installed
 
 # Setting up ZLIB
-curl https://www.zlib.net/zlib-1.3.tar.gz > bundle.tar.gz
+curl https://www.zlib.net/zlib-1.3.1.tar.gz > bundle.tar.gz
 tar -xf bundle.tar.gz
 rm bundle.tar.gz
-mv zlib-1.3 libz
+mv zlib-1.3.1 libz
 
 cd libz
 cmake -S . -B build -DCMAKE_INSTALL_PREFIX=${install_dir}
