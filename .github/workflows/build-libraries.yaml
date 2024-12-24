@@ -4,6 +4,7 @@ on:
   create:
     tags:
       - '*-x86_64'
+  pull_requests:
 
 jobs:
   build_macosx:
