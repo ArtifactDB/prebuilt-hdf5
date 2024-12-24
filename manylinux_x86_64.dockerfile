@@ -1,4 +1,4 @@
-FROM quay.io/pypa/manylinux2014_x86_64
+FROM quay.io/pypa/manylinux_x_y
 WORKDIR /home/root
 COPY setup* .
 COPY build_linux.sh .

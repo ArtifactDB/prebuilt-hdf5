@@ -1,4 +1,4 @@
-FROM quay.io/pypa/musllinux_1_1_x86_64
+FROM quay.io/pypa/musllinux_1_2
 WORKDIR /home/root
 COPY setup* .
 COPY build_linux.sh .
