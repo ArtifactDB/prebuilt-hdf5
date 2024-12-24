@@ -5,7 +5,7 @@ set -u
 
 arch=${1}
 
-mkdir installed
+mkdir -p installed
 install_dir=$(pwd)/installed
 
 common="-DCMAKE_OSX_ARCHITECTURES=${arch} -DCMAKE_INSTALL_PREFIX=${install_dir}"
