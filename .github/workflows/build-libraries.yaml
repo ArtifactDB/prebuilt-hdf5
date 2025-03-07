@@ -14,7 +14,7 @@ jobs:
       matrix:
         # macos-13 is an intel runner, higher macos's are apple silicon
         # At some point, maybe get this to work on windows-latest
-        os: [macos-13, macos-latest]
+        os: [macos-13, macos-14]
 
     steps:
       - name: Checkout
@@ -31,15 +31,16 @@ jobs:
             tar -czf macosx_x86_64.tar.gz installed/
 
       - name: Run the build
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-14'
         run: |
             git config --global --add safe.directory $(pwd)
             ./build_macosx.sh "arm64"
             tar -czf macosx_arm64.tar.gz installed/
 
       - name: Upload tarballs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: hdf5-${{ matrix.os }}
           path: "*.tar.gz"
 
   build_windows_x86_64:
@@ -58,8 +59,9 @@ jobs:
         shell: bash
 
       - name: Upload tarballs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: hdf5-windows
           path: "*.tar.gz"
 
   publish:
@@ -70,9 +72,11 @@ jobs:
 
     steps:
       - name: Download macosx artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
+          pattern: hdf5-*
           path: dump
+          merge-multiple: true
 
       - name: List artifacts
         run: ls -lR
